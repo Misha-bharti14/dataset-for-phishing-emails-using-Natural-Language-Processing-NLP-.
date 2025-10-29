@@ -1,81 +1,65 @@
 # dataset-for-phishing-emails-using-Natural-Language-Processing-NLP-.
-# Phishing NLP Detection Project
+# 🧠 Phishing Email Detection — Data Generator
 
-A natural language processing (NLP) project designed to detect phishing attempts in text-based communications.
+## 📝 Overview  
+This module creates a small, labeled dataset for a **Phishing Email Detection System** using **NLP** and **Logistic Regression**.  
+The script `generate_sample_dataset.py` produces a sample CSV dataset and a metadata file to maintain transparency and reproducibility.
 
-## 🚀 Project Overview
+---
 
-This project includes a model for classifying text as either a *phishing* attempt or a *legitimate* message. The system uses a machine learning model trained on text data, which requires a text cleaning/preprocessing step before classification.
+## 🚀 Quick Start  
 
-## 📁 Repository Structure
+```bash
+python generate_sample_dataset.py
+```
 
-The core files relevant to the project are:
+### Requirements  
+```bash
+pip install pandas
+```
 
-* phishing_detector.joblib: The trained machine learning model and its associated *Tf-idf Vectorizer*, saved using joblib.
-* phishing_nlp_detection.py (assumed): The main module containing the clean_text function and the logic for model training and prediction.
-* tests/test_pipeline.py: Unit tests to ensure the data cleaning function works correctly and that the trained model can be loaded successfully.
+---
 
-## 🛠 Setup and Installation
+## 📁 Files Generated  
 
-### Prerequisites
+| File | Description |
+|------|--------------|
+| **phishing_emails.csv** | Contains sample emails labeled as phishing or legitimate. |
+| **dataset_metadata.json** | Stores creation details and label mapping. |
 
-You will need *Python 3.x* and the following packages:
+---
 
-* joblib
-* pytest (for running the tests)
-* The necessary libraries for your NLP model (e.g., scikit-learn, numpy, etc.)
-
-### Installation Steps
-
-1.  *Clone the repository:*
-    bash
-    git clone [YOUR_REPOSITORY_URL]
-    cd [YOUR_REPOSITORY_NAME]
-    
-
-2.  *Install dependencies:*
-    bash
-    pip install joblib pytest scikit-learn numpy # Add other necessary packages here
-    
-
-## ✅ Running Tests
-
-The provided tests verify the core functionality of the data pipeline.
-
-1.  *Ensure the required files are present:*
-    * The file phishing_detector.joblib must be in the project root directory.
-    * The phishing_nlp_detection.py file with the clean_text function must be available.
-
-2.  *Execute the tests using pytest:*
-    bash
-    pytest tests/test_pipeline.py
-    
-
-### Test Details
-
-| Test Name | Purpose |
-| :--- | :--- |
-| test_clean_text_basic | Verifies that the clean_text function correctly *removes URLs* while retaining important keywords (like "click"). |
-| test_model_saved_and_loadable | Confirms that the necessary artifacts (vectorizer and model) are correctly packaged and can be *loaded* from phishing_detector.joblib. |
-
-## 💡 Usage (Example)
+## 💻 Script Summary  
 
 ```python
-import joblib
-from phishing_nlp_detection import clean_text
+import pandas as pd, json
+from datetime import datetime
 
-# 1. Load the model and vectorizer
-model_artifacts = joblib.load('phishing_detector.joblib')
-vectorizer = model_artifacts['vectorizer']
-clf_model = model_artifacts['model']
+samples = [
+    ("Your account has been locked due to suspicious activity...", 1),
+    ("Update your payment method to avoid interruption.", 1),
+    ("You have won $500,000! Reply to claim your prize.", 1),
+    ("Team meeting tomorrow at 10 AM", 0),
+    ("Please find attached the monthly invoice", 0)
+]
 
-# 2. Preprocess the new text
-new_email_text = "Urgent action required! Click here to update your password: [http://malicious.site](http://malicious.site)"
-cleaned_text = clean_text(new_email_text)
+df = pd.DataFrame(samples, columns=['text','label'])
+df.to_csv('phishing_emails.csv', index=False)
 
-# 3. Vectorize the text
-text_vector = vectorizer.transform([cleaned_text])
+metadata = {
+    "generated_by": "<Your Name / Roll No.>",
+    "generated_at": datetime.utcnow().isoformat() + "Z",
+    "num_samples": len(df),
+    "label_map": {"1": "phishing", "0": "legitimate"}
+}
 
-# 4. Predict the class
-prediction = clf_model.predict(text_vector)
-print(f"Prediction (0=Legit, 1=Phishing): {prediction[0]}")
+json.dump(metadata, open('dataset_metadata.json','w'), indent=2)
+print("✅ Dataset and metadata saved.")
+```
+
+---
+
+## 🔄 Next Steps  
+- Clean text data (remove URLs, stop words, etc.)  
+- Vectorize using TF-IDF  
+- Train and test the Logistic Regression model  
